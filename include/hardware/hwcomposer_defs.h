@@ -64,7 +64,23 @@ enum {
      * SurfaceFlinger will only honor this flag when the layer has no blending
      *
      */
-    HWC_HINT_CLEAR_FB       = 0x00000002
+    HWC_HINT_CLEAR_FB       = 0x00000002,
+
+#ifdef MARVELL_HWC_ENHANCEMENT
+    /*
+     * HWC sets HWC_HINT_DRAW_TV_HINT to tell SurfaceFlinger that it should draw an
+     * hint to tell use that video is showing on external HDMI device
+     *
+     */
+    HWC_HINT_DRAW_TV_HINT       = 0x00010000,
+
+    /*
+     * HWC sets HWC_HINT_CLEAR_TV_HINT to tell SurfaceFlinger that it should clear
+     * tv hint
+     *
+     */
+    HWC_HINT_CLEAR_TV_HINT       = 0x00020000,
+#endif
 };
 
 /*
@@ -87,7 +103,17 @@ enum {
      * composition type of this layer, then the hwcomposer will allow async
      * position updates to this layer via setCursorPositionAsync().
      */
-    HWC_IS_CURSOR_LAYER = 0x00000002
+    HWC_IS_CURSOR_LAYER = 0x00000002,
+
+    HWC_SCREENSHOT_ANIMATOR_LAYER = 0x00000004,
+
+#ifdef MARVELL_HWC_ENHANCEMENT
+    /*
+     * HWC_OVERLAY_SKIP_LAYER indicate HWC will not let the layer goto
+     * overlay. Add this as Marvell's HWC divide into Overlay and Baselay.
+     */
+    HWC_OVERLAY_SKIP_LAYER = 0x00010000,
+#endif
 };
 
 /*
@@ -117,6 +143,21 @@ enum {
        of this layer outside of the normal prepare()/set() loop. Added in
        HWC_DEVICE_API_VERSION_1_4. */
     HWC_CURSOR_OVERLAY =  5
+
+     /* this layer will be handled in the HWC, using a blit engine */
+     HWC_BLIT = 6,
+
+#ifdef MARVELL_HWC_ENHANCEMENT
+   /* HWC_2D is not used by compositionType, only used to count HWC_2D layers
+     * that go to HWC and use GC 2D Blit, compositionType will be other values defined privately
+     * in HWC_2D.
+     */
+    HWC_2D = 7,
+
+    /* HWC_2D_TARGET is for virtual GCU blit in HWC.
+     */
+    HWC_2D_TARGET = 8,
+#endif
  };
 /*
  * hwc_layer_t::blending values
@@ -126,7 +167,12 @@ enum {
     HWC_BLENDING_NONE     = 0x0100,
 
     /* ONE / ONE_MINUS_SRC_ALPHA */
-    HWC_BLENDING_PREMULT  = 0x0105,
+    HWC_BLENDING_COVERAGE = 0x0405,
+
+#ifdef MARVELL_HWC_ENHANCEMENT
+    /* Dim layer */
+    HWC_BLENDING_DIM      = 0x0805,
+#endif
 
     /* SRC_ALPHA / ONE_MINUS_SRC_ALPHA */
     HWC_BLENDING_COVERAGE = 0x0405
@@ -192,10 +238,18 @@ enum {
      */
     HWC_DISPLAY_DPI_X                       = 4,
     HWC_DISPLAY_DPI_Y                       = 5,
+    /* Indicates if the display is secure
+      * For HDMI/WFD if the sink supports HDCP, it will be true
+      * Primary panel is always considered secure
+      */
+     HWC_DISPLAY_SECURE                      = 6,
+#ifdef MARVELL_HWC_ENHANCEMENT
+     HWC_DISPLAY_FORMAT                      = 7,
+#endif
 
     /* Indicates which of the vendor-defined color transforms is provided by
      * this configuration. */
-    HWC_DISPLAY_COLOR_TRANSFORM             = 6,
+    HWC_DISPLAY_COLOR_TRANSFORM             = 8,
 };
 
 /* Allowed events for hwc_methods::eventControl() */
